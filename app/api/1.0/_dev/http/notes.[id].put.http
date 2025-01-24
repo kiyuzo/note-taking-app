@@ -1,0 +1,28 @@
+PUT http://localhost:3000/api/1.0/notes/3
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDAxOjQ0OjA5LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQwMTo0NDowOS4wMDBaIiwiaWF0IjoxNzM3NjgzMDkzLCJleHAiOjE3Mzc3MDEwOTN9.O1FXius2dkQpNhMUXskOpSm_mQKkSUHvt37oRyE9kgY;
+
+{
+    "title": "Sigmaboy",
+    "tags": [],
+    "content": "",
+    "isFolder": true,
+    "parentFolder": 1
+}
+
+# Expect NotesObject
+
+###
+
+PUT http://localhost:3000/api/1.0/notes/3
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDAxOjQ0OjA5LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQwMTo0NDowOS4wMDBaIiwiaWF0IjoxNzM3NjgzMDkzLCJleHAiOjE3Mzc3MDEwOTN9.O1FXius2dkQpNhMUXskOpSm_mQKkSUHvt37oRyE9kgY;
+
+{
+    "title": "",
+    "tags": ["sappay"],
+    "content": "Yablok",
+    "parentFolder": 3
+}
+
+# Expect NotesObject

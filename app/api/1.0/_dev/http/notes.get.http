@@ -1,0 +1,68 @@
+GET http://localhost:3000/api/1.0/notes
+Content-Type: application/json
+
+# Expect no session
+
+###
+
+GET http://localhost:3000/api/1.0/notes
+Content-Type: application/json
+Cookie: _Host-sessionJWT=sigmaa;
+
+# Expect invalid session
+
+###
+
+GET http://localhost:3000/api/1.0/notes
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzE5OTM0LCJleHAiOjE3Mzc3Mzc5MzR9.eO-ri-vHyVOrhpCjgLQHQhxwQ127nhGIn4625RoghvA;
+
+# Expect notes
+
+###
+
+GET http://localhost:3000/api/1.0/notes?limit=0
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzE5OTM0LCJleHAiOjE3Mzc3Mzc5MzR9.eO-ri-vHyVOrhpCjgLQHQhxwQ127nhGIn4625RoghvA;
+
+# Expect 0
+
+###
+
+GET http://localhost:3000/api/1.0/notes?lastId=1
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzE5OTM0LCJleHAiOjE3Mzc3Mzc5MzR9.eO-ri-vHyVOrhpCjgLQHQhxwQ127nhGIn4625RoghvA;
+
+# Expect exclude first note
+
+###
+
+GET http://localhost:3000/api/1.0/notes?limit=1&lastId=1
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzE5OTM0LCJleHAiOjE3Mzc3Mzc5MzR9.eO-ri-vHyVOrhpCjgLQHQhxwQ127nhGIn4625RoghvA;
+
+# Expect 1 from second position
+
+###
+
+GET http://localhost:3000/api/1.0/notes?shared=true&notOwned=true
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjIsInVzZXJuYW1lIjoiTWFsb2thIiwiZW1haWwiOiJtYWxva2FAZ21haWwuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDEtMjRUMTE6NTg6NDAuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjQwLjAwMFoiLCJpYXQiOjE3Mzc3MjAwMjgsImV4cCI6MTczNzczODAyOH0.GAcceleo-CcnrXJQLBoW97PEYEkOeKhC-ZGm2-xOHRg;
+
+# Testing shared
+
+###
+
+GET http://localhost:3000/api/1.0/notes
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjIsInVzZXJuYW1lIjoiTWFsb2thIiwiZW1haWwiOiJtYWxva2FAZ21haWwuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDEtMjRUMTE6NTg6NDAuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjQwLjAwMFoiLCJpYXQiOjE3Mzc3MjAwMjgsImV4cCI6MTczNzczODAyOH0.GAcceleo-CcnrXJQLBoW97PEYEkOeKhC-ZGm2-xOHRg;
+
+# Testing owned
+
+###
+
+GET http://localhost:3000/api/1.0/notes?shared=true
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjIsInVzZXJuYW1lIjoiTWFsb2thIiwiZW1haWwiOiJtYWxva2FAZ21haWwuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDEtMjRUMTE6NTg6NDAuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjQwLjAwMFoiLCJpYXQiOjE3Mzc3MjAwMjgsImV4cCI6MTczNzczODAyOH0.GAcceleo-CcnrXJQLBoW97PEYEkOeKhC-ZGm2-xOHRg;
+
+# Testing all
