@@ -1,0 +1,14 @@
+GET http://localhost:3000/api/1.0/notes/shared
+Content-Type: application/json
+
+###
+
+GET http://localhost:3000/api/1.0/notes/shared
+Content-Type: application/json
+Cookie: _Host-sessionJWT=sigmaa
+
+###
+
+GET http://localhost:3000/api/1.0/notes/shared
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjIsInVzZXJuYW1lIjoiTWFsb2thIiwiZW1haWwiOiJtYWxva2FAZ21haWwuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDEtMjRUMTE6NTg6NDAuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjQwLjAwMFoiLCJpYXQiOjE3Mzc3MjAwMjgsImV4cCI6MTczNzczODAyOH0.GAcceleo-CcnrXJQLBoW97PEYEkOeKhC-ZGm2-xOHRg;

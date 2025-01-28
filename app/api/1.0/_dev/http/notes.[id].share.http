@@ -1,0 +1,15 @@
+GET http://localhost:3000/api/1.0/notes/1/share
+Content-Type: application/json
+Cookie: _Host-sessionJWT=sigma
+
+###
+
+GET http://localhost:3000/api/1.0/notes/1/share
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzIxNjMyLCJleHAiOjE3Mzc3Mzk2MzJ9.96aKj_fb6AZtnDb8dXqwmCtF0JtFnEBb86Dx3wvn7zQ;
+
+###
+
+GET http://localhost:3000/api/1.0/notes/1/share
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzIwNzY2LCJleHAiOjE3Mzc3Mzg3NjZ9.Dq1NUrHdp7M7XNuZaTsagIfTVKBSM7l1x0yJbHnDskw;

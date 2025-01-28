@@ -1,0 +1,12 @@
+POST http://localhost:3000/api/1.0/notes
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzE5OTM0LCJleHAiOjE3Mzc3Mzc5MzR9.eO-ri-vHyVOrhpCjgLQHQhxwQ127nhGIn4625RoghvA;
+
+{
+    "title": "Ini aku yang bikin",
+    "tags": ["yabloka"],
+    "content": "Ini belum ada apa apa",
+    "isFolder": false
+}
+
+# Expects NotesObject

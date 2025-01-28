@@ -1,0 +1,34 @@
+POST http://localhost:3000/api/1.0/register
+Content-Type: application/json
+
+{
+    "username": "Sigma"
+}
+
+# Expect Invalid Request Body
+
+###
+
+POST http://localhost:3000/api/1.0/register
+Content-Type: application/json
+
+{
+    "username": "Troll321",
+    "email": "atila.ghulwani@gmail.com",
+    "password": "SIGMA"
+}
+
+# Expect success
+
+###
+
+POST http://localhost:3000/api/1.0/register
+Content-Type: application/json
+
+{
+    "username": "Maloka",
+    "email": "maloka@gmail.com",
+    "password": "SIGMA"
+}
+
+# Expect success diff user

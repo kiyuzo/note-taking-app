@@ -1,0 +1,53 @@
+# LOGIN ROUTE
+POST http://localhost:3000/api/1.0/login
+Content-Type: application/json
+
+# Expect invalid request body
+
+###
+
+POST http://localhost:3000/api/1.0/login
+Content-Type: application/json
+
+{
+    "email": "asigma",
+    "password": "12313"
+}
+
+# Expect invalid request body
+
+###
+
+POST http://localhost:3000/api/1.0/login
+Content-Type: application/json
+
+{
+    "email": "atila@yabloka.com",
+    "password": "Tcueh"
+}
+
+# Expect no matching credentials
+
+###
+
+POST http://localhost:3000/api/1.0/login
+Content-Type: application/json
+
+{
+    "email": "atila.ghulwani@gmail.com",
+    "password": "SIGMA"
+}
+
+# Expect session
+
+###
+
+POST http://localhost:3000/api/1.0/login
+Content-Type: application/json
+
+{
+    "email": "maloka@gmail.com",
+    "password": "SIGMA"
+}
+
+# Expect session diff user

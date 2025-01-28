@@ -1,0 +1,21 @@
+GET http://localhost:3000/api/1.0/notes/1
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoiVHJvbGwzMjEiLCJlbWFpbCI6ImF0aWxhLmdodWx3YW5pQGdtYWlsLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjM3LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNS0wMS0yNFQxMTo1ODozNy4wMDBaIiwiaWF0IjoxNzM3NzIyOTU5LCJleHAiOjE3Mzc3NDA5NTl9.202SmQNyreTBawutRJDii7q3PV_BvFfya-y1ahGn8XY;
+
+# Expects notes
+
+###
+
+GET http://localhost:3000/api/1.0/notes/4
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjIsInVzZXJuYW1lIjoiTWFsb2thIiwiZW1haWwiOiJtYWxva2FAZ21haWwuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDEtMjRUMTE6NTg6NDAuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjQwLjAwMFoiLCJpYXQiOjE3Mzc3MjI5NzQsImV4cCI6MTczNzc0MDk3NH0.Ky_mRkL8KbtMqNzWDwcG1Jctk-OivNbDNd_tl2bFj88;
+
+# Expects diff user not have permission
+
+###
+
+GET http://localhost:3000/api/1.0/notes/1
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjIsInVzZXJuYW1lIjoiTWFsb2thIiwiZW1haWwiOiJtYWxva2FAZ21haWwuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDEtMjRUMTE6NTg6NDAuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTAxLTI0VDExOjU4OjQwLjAwMFoiLCJpYXQiOjE3Mzc3MjI5NzQsImV4cCI6MTczNzc0MDk3NH0.Ky_mRkL8KbtMqNzWDwcG1Jctk-OivNbDNd_tl2bFj88;
+
+# Expects diff user have permission
