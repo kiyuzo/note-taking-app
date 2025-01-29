@@ -17,14 +17,32 @@ const Login = () => {
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      // Simulate successful login
-      router.push('/dashboard');
+      try {
+        const response = await fetch('YOUR_BACKEND_API_URL/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('token', data.token); // Store the token in localStorage
+          router.push('/dashboard');
+        } else {
+          const data = await response.json();
+          setErrors({ api: data.message || 'Login failed' });
+        }
+      } catch (error) {
+        setErrors({ api: 'An error occurred. Please try again.' });
+      }
     }
   };
 
@@ -49,39 +67,28 @@ const Login = () => {
               />
               {errors.email && <p className="text-red-500 text-xs italic">{errors.email}</p>}
             </div>
-            <div className="mb-4">
+            <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                 Password
               </label>
               <input
                 type="password"
                 id="password"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
             </div>
-            <a
-              href="#"
-              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mb-8"
-            >
-              Forgot Password?
-            </a>
+            {errors.api && <p className="text-red-500 text-xs italic">{errors.api}</p>}
             <div className="flex items-center justify-between">
               <button
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
-                Sign In
+                Login
               </button>
-              <a
-                href="/register"
-                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              >
-                Don't have an account?
-              </a>
             </div>
           </form>
         </div>

@@ -19,13 +19,30 @@ const Register = () => {
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      router.push('/login');
+      try {
+        const response = await fetch('YOUR_BACKEND_API_URL/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        if (response.ok) {
+          router.push('/login');
+        } else {
+          const data = await response.json();
+          setErrors({ api: data.message || 'Registration failed' });
+        }
+      } catch (error) {
+        setErrors({ api: 'An error occurred. Please try again.' });
+      }
     }
   };
 
@@ -78,6 +95,7 @@ const Register = () => {
               />
               {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
             </div>
+            {errors.api && <p className="text-red-500 text-xs italic">{errors.api}</p>}
             <div className="flex items-center justify-between">
               <button
                 type="submit"
@@ -85,12 +103,6 @@ const Register = () => {
               >
                 Register
               </button>
-              <a
-                href="/login"
-                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              >
-                Have an account?
-              </a>
             </div>
           </form>
         </div>

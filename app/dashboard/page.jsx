@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '../_components/navbar';
+import Sidebar from '../_components/sidebar';
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
-  const [search, setSearch] = useState('');
   const [sort, setSort] = useState('date');
   const router = useRouter();
 
@@ -19,59 +18,78 @@ export default function Dashboard() {
     fetchNotes();
   }, []);
 
-  const filteredNotes = notes
-    .filter((note) =>
-      search
-        ? note.title.toLowerCase().includes(search.toLowerCase())
-        : true
-    )
-    .sort((a, b) => {
-      if (sort === 'date') return new Date(b.updated_at) - new Date(a.updated_at);
-      if (sort === 'alphabetical') return a.title.localeCompare(b.title);
-      return 0;
-    });
+  const handleSortChange = (e) => {
+    setSort(e.target.value);
+  };
+
+  const handleNewNote = () => {
+    router.push('/create-note');
+  };
+
+  const handleDeleteNote = (noteId) => {
+    const updatedNotes = notes.filter(note => note.note_id !== noteId);
+    setNotes(updatedNotes);
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+  };
+
+  const filteredNotes = notes.sort((a, b) => {
+    if (sort === 'date') {
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    } else if (sort === 'alphabetical') {
+      return a.title.localeCompare(b.title);
+    } else if (sort === 'tags') {
+      return a.tags.join(', ').localeCompare(b.tags.join(', '));
+    }
+    return 0;
+  });
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-      <div className="p-4 flex-grow">
-        <div className="flex justify-between items-center mb-4">
-          <input
-            type="text"
-            placeholder="Search notes..."
-            className="border p-2 rounded"
-            onChange={(e) => setSearch(e.target.value)}
-          />
+    <div className="min-h-screen flex bg-white">
+      <Sidebar
+        accountName="User Name"
+        accountEmail="user@example.com"
+        onNewNote={handleNewNote}
+        notes={notes}
+      />
+      <div className="flex-grow p-4">
+        <div className="flex justify-end items-center mb-4">
           <select
-            className="border p-2 rounded"
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            onChange={handleSortChange}
+            className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
             <option value="date">Sort by Date</option>
             <option value="alphabetical">Sort Alphabetically</option>
+            <option value="tags">Sort by Tags</option>
           </select>
-          <a
-            href="/create-note"
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Create Note
-          </a>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredNotes.map((note) => (
-            <div
-              key={note.note_id}
-              className="p-4 border rounded cursor-pointer"
-              onClick={() => router.push(`/notes/${note.note_id}/view`)}
-            >
-              <h2 className="text-lg font-bold">{note.title}</h2>
-              <p className="text-sm text-gray-600">
-                {note.content.slice(0, 100)}...
-              </p>
-              <p className="text-xs text-gray-500">
-                Last Modified: {new Date(note.updated_at).toLocaleDateString()}
-              </p>
+            <div key={note.note_id} className="border p-4 rounded shadow">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xl font-bold text-black">{note.title}</h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => router.push(`/edit-note/${note.note_id}`)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.213l-4.5 1.5 1.5-4.5L16.862 3.487z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleDeleteNote(note.note_id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 6.75L4.5 6.75m0 0L5.25 19.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25L19.5 6.75m-15 0L6 4.5a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 4.5l.75 2.25m-15 0h15" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-2">{note.content}</p>
+              <p className="text-gray-500 text-sm">Tags: {note.tags.join(', ')}</p>
+              <p className="text-gray-500 text-sm">Updated: {new Date(note.updated_at).toLocaleString()}</p>
             </div>
           ))}
         </div>

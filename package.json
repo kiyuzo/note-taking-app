@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "draft-js": "^0.11.7",
     "jsonschema": "^1.5.0",
     "jsonwebtoken": "^9.0.2",
     "next": "15.1.4",

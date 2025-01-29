@@ -10,9 +10,6 @@ const Navbar = () => {
         <li>
           <a href="/dashboard" className="text-white hover:underline">Dashboard</a>
         </li>
-        <li>
-          <a href="" className="text-white hover:underline">New Note</a>
-        </li>
         <div className='flex space-x-4'>
             <li>
                 <a href="/login" className="text-white hover:underline">Login</a>

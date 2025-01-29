@@ -1,22 +1,44 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Navbar from '../_components/navbar';
 import dynamic from 'next/dynamic';
-import { EditorState, RichUtils, convertToRaw } from 'draft-js';
+import { EditorState, convertFromRaw, convertToRaw, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
 const Editor = dynamic(() => import('draft-js').then(mod => mod.Editor), { ssr: false });
 
-export default function CreateNote() {
+export default function EditNote() {
+  const router = useRouter();
+  const { id } = useParams();
   const [title, setTitle] = useState('');
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [tags, setTags] = useState('');
   const [folder, setFolder] = useState('');
   const [isPinned, setIsPinned] = useState(false);
   const [attachments, setAttachments] = useState([]);
-  const router = useRouter();
+
+  useEffect(() => {
+    const fetchNote = () => {
+      const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+      const note = storedNotes.find(note => note.note_id === id);
+      if (note) {
+        setTitle(note.title);
+        setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(note.content))));
+        setTags(note.tags.join(', '));
+        setFolder(note.folder);
+        setIsPinned(note.is_pinned);
+        setAttachments(note.attachments || []);
+      } else {
+        router.push('/dashboard');
+      }
+    };
+
+    if (id) {
+      fetchNote();
+    }
+  }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,9 +46,8 @@ export default function CreateNote() {
     const contentState = editorState.getCurrentContent();
     const content = JSON.stringify(convertToRaw(contentState));
 
-    // Simulate note creation
-    const newNote = {
-      note_id: Date.now().toString(), // Unique ID for the note
+    const updatedNote = {
+      note_id: id,
       user_id: 'dummy-user-id', // Replace with actual user ID in a real application
       title,
       content,
@@ -38,12 +59,10 @@ export default function CreateNote() {
       updated_at: new Date().toISOString(),
     };
 
-    // Store the note in localStorage
-    const existingNotes = JSON.parse(localStorage.getItem('notes')) || [];
-    existingNotes.push(newNote);
-    localStorage.setItem('notes', JSON.stringify(existingNotes));
+    const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+    const updatedNotes = storedNotes.map(note => (note.note_id === id ? updatedNote : note));
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
 
-    // Redirect to the dashboard
     router.push('/dashboard');
   };
 
@@ -78,7 +97,7 @@ export default function CreateNote() {
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <div className="p-4 flex-grow">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Note</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Edit Note</h2>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
