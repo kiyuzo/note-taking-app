@@ -1,0 +1,8 @@
+POST http://localhost:3000/api/1.0/user
+Content-Type: application/json
+Cookie: _Host-sessionJWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1SUQiOjEsInVzZXJuYW1lIjoicm9vdCIsImVtYWlsIjoicm9vdEBnbWFpbC5jb20iLCJjcmVhdGVkX2F0IjoiMjAyNS0wMS0yN1QxNDozNzoxNy4wMDBaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDEtMjdUMTQ6Mzc6MTcuMDAwWiIsImlhdCI6MTczNzk4ODcxNiwiZXhwIjoxNzM4MDA2NzE2fQ.Qqn-bTeWRonQKg8EHKe_QryiFkanHHbyA0eihUYaZ58;
+
+{
+    "username": "sfs",
+    "password": "sf"
+}

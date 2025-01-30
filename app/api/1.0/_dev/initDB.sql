@@ -7,7 +7,7 @@ create table user (
 	uID int auto_increment,
 	username varchar(64) not null default "",
     email varchar(64) unique not null,
-    password varchar(64) not null,
+    password varchar(50) not null,
     created_at datetime not null default current_timestamp(),
     updated_at datetime not null default current_timestamp(),
     primary key(uID)
@@ -15,12 +15,9 @@ create table user (
 
 drop trigger if exists user_update_time_trigger;
 create trigger user_update_time_trigger
-after update on user
-for each row 
-update user
-	set updated_at = current_timestamp()
-	where uID = new.uID;
-
+before update on user
+for each row
+	set new.updated_at = current_timestamp();
 
 drop table if exists notes;
 create table notes (
@@ -35,23 +32,16 @@ create table notes (
     updated_at datetime not null default current_timestamp(),
     primary key(nID),
     foreign key(owner) references user(uID)
+		on delete cascade on update cascade,
+	foreign key(parent_folder) references notes(nID)
 		on delete cascade on update cascade
 );
 
 drop trigger if exists notes_update_time_trigger;
 create trigger notes_update_time_trigger
-after update on notes
+before update on notes
 for each row 
-update notes
-	set updated_at = current_timestamp()
-	where nID = old.nID;
-
-drop trigger if exists notes_delete_parent_folder_trigger;
-create trigger notes_delete_parent_folder_trigger
-after delete on notes
-for each row 
-delete from notes
-	where parent_folder = old.nID and parent_folder is not null;
+set new.updated_at = current_timestamp();
 
 drop table if exists shared;
 create table shared (
@@ -59,6 +49,7 @@ create table shared (
 	nID int not null,
     user_from int not null,
     user_to int not null,
+    permission int not null,
 	shared_at datetime not null default current_timestamp(),
     primary key(sID),
     foreign key(nID) references notes(nID)
@@ -69,15 +60,21 @@ create table shared (
 		on delete cascade on update cascade
 );
 
+drop trigger if exists shared_shared_time_trigger;
+create trigger shared_shared_time_trigger
+before update on shared
+for each row 
+set new.shared_at = current_timestamp();
+
 drop table if exists pinned;
 create table pinned (
 	nID int not null,
-	sID int,
-    uID int,
+    uID int not null,
+    sID int,
     foreign key(nID) references notes(nID)
 		on delete cascade on update cascade,
-    foreign key(sID) references shared(sID)
-		on delete cascade on update cascade,
     foreign key(uID) references user(uID)
+		on delete cascade on update cascade,
+	foreign key(sID) references shared(sID)
 		on delete cascade on update cascade
 );

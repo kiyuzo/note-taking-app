@@ -55,7 +55,8 @@ const notesBodySchema = {
             type: "array",
             items: {
                 type: "string",
-                maxLength: parseInt(process.env.INPUT_LENGTH_LIMIT)
+                maxLength: parseInt(process.env.INPUT_LENGTH_LIMIT),
+                pattern: /^[\w]+$/i
             },
             maxItems: parseInt(process.env.TAGS_QUANTITY_LIMIT),
             required: true
@@ -68,7 +69,7 @@ const notesBodySchema = {
             type: "boolean",
         },
         parentFolder: {
-            type: "number"
+            type: ["number", "null"]
         },
     },
     additionalProperties: false
@@ -85,6 +86,8 @@ const shareBodySchema = {
         },
         permission: {
             type: "number",
+            minimum: 0,
+            maximum: parseInt(process.env.MAXIMUM_PERMISSION),
             required: true
         }
     },
@@ -108,6 +111,11 @@ const updateUserBodySchema = {
     additionalProperties: false
 }
 
+const tagsSchema = {
+    type: "string",
+    pattern: /^\w+(,\w*)*$/i
+}
+
 export function validateRegisterBody(instance) {
     return v.validate(instance, registerBodySchema).valid;
 }
@@ -128,6 +136,6 @@ export function validateUpdateUserBody(instance) {
     return v.validate(instance, updateUserBodySchema).valid;
 }
 
-export function validateNumber(instance) {
-    return v.validate(instance, {type: "number"}).valid;
+export function validateTags(instance) {
+    return v.validate(instance, tagsSchema).valid;
 }
