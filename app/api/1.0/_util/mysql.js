@@ -1,4 +1,4 @@
-import * as serverlessMysql from "serverless-mysql";
+import serverlessMysql from "serverless-mysql";
 
 const mysql = serverlessMysql();
 

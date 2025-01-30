@@ -34,7 +34,7 @@ POST http://localhost:3000/api/1.0/login
 Content-Type: application/json
 
 {
-    "email": "atila.ghulwani@gmail.com",
+    "email": "root@gmail.com",
     "password": "SIGMA"
 }
 
