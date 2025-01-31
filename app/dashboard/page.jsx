@@ -7,15 +7,54 @@ import Sidebar from '../_components/sidebar';
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
   const [sort, setSort] = useState('date');
+  const [user, setUser] = useState({ username: '', email: '' });
   const router = useRouter();
 
   useEffect(() => {
-    const fetchNotes = () => {
-      const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
-      setNotes(storedNotes);
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch('/api/1.0/notes', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setNotes(data.notes || []);
+        } else {
+          console.error('Failed to fetch notes');
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching notes', error);
+      }
+    };
+
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/1.0/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUser({ username: data.username, email: data.email });
+        } else {
+          console.error('Failed to fetch user data');
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching user data', error);
+      }
     };
 
     fetchNotes();
+    fetchUser();
   }, []);
 
   const handleSortChange = (e) => {
@@ -26,13 +65,27 @@ export default function Dashboard() {
     router.push('/create-note');
   };
 
-  const handleDeleteNote = (noteId) => {
-    const updatedNotes = notes.filter(note => note.note_id !== noteId);
-    setNotes(updatedNotes);
-    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+  const handleDeleteNote = async (noteId) => {
+    try {
+      const response = await fetch(`/api/1.0/notes/${noteId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const updatedNotes = notes.filter(note => note.note_id !== noteId);
+        setNotes(updatedNotes);
+      } else {
+        console.error('Failed to delete note');
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting the note', error);
+    }
   };
 
-  const filteredNotes = notes.sort((a, b) => {
+  const filteredNotes = (notes || []).sort((a, b) => {
     if (sort === 'date') {
       return new Date(b.updated_at) - new Date(a.updated_at);
     } else if (sort === 'alphabetical') {
@@ -46,8 +99,8 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen flex bg-white">
       <Sidebar
-        accountName="User Name"
-        accountEmail="user@example.com"
+        accountName={user.username}
+        accountEmail={user.email}
         onNewNote={handleNewNote}
         notes={notes}
       />

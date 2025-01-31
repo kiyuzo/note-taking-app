@@ -8,6 +8,7 @@ export async function POST(request) {
 
     // Validate Input
     try {
+        console.log(request.Body);
         json = await request.json();
         if(!validateRegisterBody(json)) {throw "Invalid request body";}        
     } catch (err) {
@@ -22,6 +23,7 @@ export async function POST(request) {
         if (err.code === "ER_DUP_ENTRY") {
             return NextResponse.json("User already registered", { status: 409 });
         }
+        console.log(err);
         return NextResponse.json("Server down", { status: 500 });
     }
 

@@ -18,52 +18,94 @@ export default function EditNote() {
   const [folder, setFolder] = useState('');
   const [isPinned, setIsPinned] = useState(false);
   const [attachments, setAttachments] = useState([]);
+  const [user, setUser] = useState({ user_id: '', username: '', email: '' });
 
   useEffect(() => {
-    const fetchNote = () => {
-      const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
-      const note = storedNotes.find(note => note.note_id === id);
-      if (note) {
-        setTitle(note.title);
-        setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(note.content))));
-        setTags(note.tags.join(', '));
-        setFolder(note.folder);
-        setIsPinned(note.is_pinned);
-        setAttachments(note.attachments || []);
-      } else {
-        router.push('/dashboard');
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/1.0/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUser({ user_id: data.user_id, username: data.username, email: data.email });
+        } else {
+          console.error('Failed to fetch user data');
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching user data', error);
       }
     };
 
-    if (id) {
-      fetchNote();
-    }
+    const fetchNote = async () => {
+      try {
+        const response = await fetch(`/api/1.0/notes/${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setTitle(data.title);
+          setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(data.content))));
+          setTags(data.tags.join(', '));
+          setFolder(data.folder);
+          setIsPinned(data.is_pinned);
+          setAttachments(data.attachments || []);
+        } else {
+          console.error('Failed to fetch note data');
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching note data', error);
+      }
+    };
+
+    fetchUser();
+    fetchNote();
   }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const contentState = editorState.getCurrentContent();
     const content = JSON.stringify(convertToRaw(contentState));
 
     const updatedNote = {
-      note_id: id,
-      user_id: 'dummy-user-id', // Replace with actual user ID in a real application
       title,
       content,
       tags: tags.split(',').map(tag => tag.trim()),
       folder,
       is_pinned: isPinned,
       attachments,
-      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
-    const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
-    const updatedNotes = storedNotes.map(note => (note.note_id === id ? updatedNote : note));
-    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+    try {
+      const response = await fetch(`/api/1.0/notes/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...updatedNote, user_id: user.user_id }),
+      });
 
-    router.push('/dashboard');
+      if (response.ok) {
+        // Redirect to the dashboard
+        router.push('/dashboard');
+      } else {
+        console.error('Failed to update note');
+      }
+    } catch (error) {
+      console.error('An error occurred while updating the note', error);
+    }
   };
 
   const handleCancel = () => {

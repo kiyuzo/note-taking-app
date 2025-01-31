@@ -6,10 +6,27 @@ const Hero = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    }
+    const checkLoginStatus = async () => {
+      try {
+        const response = await fetch('/api/1.0/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('An error occurred while checking login status', error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLoginStatus();
   }, []);
 
   return (

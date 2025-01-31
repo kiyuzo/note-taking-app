@@ -27,7 +27,7 @@ const Register = () => {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await fetch('/api/1.0/(public)/register', {
+        const response = await fetch('/api/1.0/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

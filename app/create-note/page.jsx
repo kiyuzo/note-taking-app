@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../_components/navbar';
 import dynamic from 'next/dynamic';
@@ -16,35 +16,70 @@ export default function CreateNote() {
   const [folder, setFolder] = useState('');
   const [isPinned, setIsPinned] = useState(false);
   const [attachments, setAttachments] = useState([]);
+  const [user, setUser] = useState({ user_id: '', username: '', email: '' });
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/1.0/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUser({ user_id: data.user_id, username: data.username, email: data.email });
+        } else {
+          console.error('Failed to fetch user data');
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching user data', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const contentState = editorState.getCurrentContent();
     const content = JSON.stringify(convertToRaw(contentState));
 
-    // Simulate note creation
     const newNote = {
-      note_id: Date.now().toString(), // Unique ID for the note
-      user_id: 'dummy-user-id', // Replace with actual user ID in a real application
       title,
       content,
       tags: tags.split(',').map(tag => tag.trim()),
-      folder,
-      is_pinned: isPinned,
-      attachments,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      is_folder: false,
+      parent_folder: folder || null,
+      owner: user.user_id,
     };
 
-    // Store the note in localStorage
-    const existingNotes = JSON.parse(localStorage.getItem('notes')) || [];
-    existingNotes.push(newNote);
-    localStorage.setItem('notes', JSON.stringify(existingNotes));
+    try {
+      const response = await fetch('/api/1.0/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newNote),
+      });
 
-    // Redirect to the dashboard
-    router.push('/dashboard');
+      if (response.ok) {
+        const createdNote = await response.json();
+        console.log('Note created with ID:', createdNote.nID);
+        // Redirect to the dashboard
+        router.push('/dashboard');
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to create note', errorData);
+      }
+    } catch (error) {
+      console.error('An error occurred while creating the note', error);
+    }
   };
 
   const handleCancel = () => {

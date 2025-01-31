@@ -25,7 +25,7 @@ const Login = () => {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await fetch('/api/1.0/(public)/login', {
+        const response = await fetch('/api/1.0/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
