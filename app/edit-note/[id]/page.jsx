@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Navbar from '../_components/navbar';
+import Navbar from '../../_components/navbar';
 import dynamic from 'next/dynamic';
 import { EditorState, convertFromRaw, convertToRaw, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
@@ -14,10 +14,12 @@ export default function EditNote() {
   const { id } = useParams();
   const [title, setTitle] = useState('');
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
   const [folder, setFolder] = useState('');
   const [isPinned, setIsPinned] = useState(false);
-  const [attachments, setAttachments] = useState([]);
+  const [isFolder, setIsFolder] = useState(false);
+  const [parentFolder, setParentFolder] = useState('');
   const [user, setUser] = useState({ user_id: '', username: '', email: '' });
 
   useEffect(() => {
@@ -54,14 +56,15 @@ export default function EditNote() {
         const data = await response.json();
 
         if (response.ok) {
-          setTitle(data.title);
+          setTitle(data.title || '');
           setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(data.content))));
-          setTags(data.tags.join(', '));
-          setFolder(data.folder);
-          setIsPinned(data.is_pinned);
-          setAttachments(data.attachments || []);
+          setTags(data.tags || []);
+          setFolder(data.folder || '');
+          setIsPinned(data.is_pinned || false);
+          setIsFolder(data.is_folder || false);
+          setParentFolder(data.parent_folder || '');
         } else {
-          console.error('Failed to fetch note data');
+          console.error('Failed to fetch note data', data);
         }
       } catch (error) {
         console.error('An error occurred while fetching note data', error);
@@ -81,10 +84,11 @@ export default function EditNote() {
     const updatedNote = {
       title,
       content,
-      tags: tags.split(',').map(tag => tag.trim()),
+      tags,
       folder,
       is_pinned: isPinned,
-      attachments,
+      is_folder: isFolder,
+      parent_folder: parentFolder,
       updated_at: new Date().toISOString(),
     };
 
@@ -97,11 +101,14 @@ export default function EditNote() {
         body: JSON.stringify({ ...updatedNote, user_id: user.user_id }),
       });
 
+      const responseData = await response.json();
+
       if (response.ok) {
+        console.log('Note updated successfully', responseData);
         // Redirect to the dashboard
         router.push('/dashboard');
       } else {
-        console.error('Failed to update note');
+        console.error('Failed to update note', responseData);
       }
     } catch (error) {
       console.error('An error occurred while updating the note', error);
@@ -110,11 +117,6 @@ export default function EditNote() {
 
   const handleCancel = () => {
     router.push('/dashboard');
-  };
-
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments([...attachments, ...files]);
   };
 
   const handleKeyCommand = (command) => {
@@ -133,6 +135,21 @@ export default function EditNote() {
 
   const toggleInlineStyle = (inlineStyle) => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+  };
+
+  const handleTagInputChange = (e) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleAddTag = () => {
+    if (tagInput.trim() !== '') {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index));
   };
 
   return (
@@ -162,7 +179,7 @@ export default function EditNote() {
               <div className="mb-2 flex space-x-2">
                 <button type="button" onClick={() => toggleInlineStyle('BOLD')} className="mr-2">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6" style={{ color: 'black' }}>
-                    <path strokeLinejoin="round" d="M6.75 3.744h-.753v8.25h7.125a4.125 4.125 0 0 0 0-8.25H6.75Zm0 0v.38m0 16.122h6.747a4.5 4.5 0 0 0 0-9.001h-7.5v9h.753Zm0 0v-.37m0-15.751h6a3.75 3.75 0 1 1 0 7.5h-6m0-7.5v7.5m0 0v8.25m0-8.25h6.375a4.125 4.125 0 0 1 0 8.25H6.75m.747-15.38h4.875a3.375 3.375 0 0 1 0 6.75H7.497v-6.75Zm0 7.5h5.25a3.75 3.75 0 0 1 0 7.5h-5.25v-7.5Z" />
+                    <path strokeLinejoin="round" d="M6.75 3.744h-.753v8.25h7.125a4.125 4.125 0 0 0 0-8.25H6.75Zm0 0v.38m0 16.122h6.747a4.5 4.5 0 0 0 0-9.001h-7.5v9h.753Zm0 0v-.37m0-15.751h6a3.75 3.75 1 1 1 0 7.5h-6m0-7.5v7.5m0 0v8.25m0-8.25h6.375a4.125 4.125 0 0 1 0 8.25H6.75m.747-15.38h4.875a3.375 3.375 0 0 1 0 6.75H7.497v-6.75Zm0 7.5h5.25a3.75 3.75 0 0 1 0 7.5h-5.25v-7.5Z" />
                   </svg>
                 </button>
                 <button type="button" onClick={() => toggleInlineStyle('ITALIC')} className="mr-2">
@@ -191,26 +208,53 @@ export default function EditNote() {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="tags">
-              Tags (comma separated)
+              Tags
+            </label>
+            <div className="flex items-center">
+              <input
+                type="text"
+                id="tagInput"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                value={tagInput}
+                onChange={handleTagInputChange}
+              />
+              <button type="button" onClick={handleAddTag} className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Add Tag
+              </button>
+            </div>
+            <div className="mt-2">
+              {tags.map((tag, index) => (
+                <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                  {tag}
+                  <button type="button" onClick={() => handleRemoveTag(index)} className="ml-2 text-red-500">
+                    &times;
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isFolder">
+              Is Folder
             </label>
             <input
-              type="text"
-              id="tags"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
+              type="checkbox"
+              id="isFolder"
+              className="mr-2 leading-tight"
+              checked={isFolder}
+              onChange={(e) => setIsFolder(e.target.checked)}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="folder">
-              Folder
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="parentFolder">
+              Parent Folder
             </label>
             <input
               type="text"
-              id="folder"
+              id="parentFolder"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={folder}
-              onChange={(e) => setFolder(e.target.value)}
+              value={parentFolder}
+              onChange={(e) => setParentFolder(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -224,33 +268,6 @@ export default function EditNote() {
               checked={isPinned}
               onChange={(e) => setIsPinned(e.target.checked)}
             />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="attachments">
-              Attach Files/Images
-            </label>
-            <input
-              type="file"
-              id="attachments"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              multiple
-              onChange={handleFileChange}
-            />
-            <div className="mt-2">
-              {attachments.map((file, index) => (
-                <div key={index} className="mb-2">
-                  {file.type.startsWith('image/') ? (
-                    <img src={URL.createObjectURL(file)} alt={file.name} className="w-32 h-32 object-cover" />
-                  ) : (
-                    <div>
-                      <p>{file.name}</p>
-                      <p>{(file.size / 1024).toFixed(2)} KB</p>
-                      <p>{file.type}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
           <div className="flex items-center justify-between">
             <button
