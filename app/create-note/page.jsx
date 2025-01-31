@@ -13,9 +13,9 @@ export default function CreateNote() {
   const [title, setTitle] = useState('');
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [tags, setTags] = useState('');
-  const [folder, setFolder] = useState('');
+  const [isFolder, setIsFolder] = useState(false);
+  const [parentFolder, setParentFolder] = useState('');
   const [isPinned, setIsPinned] = useState(false);
-  const [attachments, setAttachments] = useState([]);
   const [user, setUser] = useState({ user_id: '', username: '', email: '' });
   const router = useRouter();
 
@@ -54,8 +54,8 @@ export default function CreateNote() {
       title,
       content,
       tags: tags.split(',').map(tag => tag.trim()),
-      is_folder: false,
-      parent_folder: folder || null,
+      isFolder,
+      parentFolder: parentFolder || null,
       owner: user.user_id,
     };
 
@@ -84,11 +84,6 @@ export default function CreateNote() {
 
   const handleCancel = () => {
     router.push('/dashboard');
-  };
-
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments([...attachments, ...files]);
   };
 
   const handleKeyCommand = (command) => {
@@ -176,15 +171,27 @@ export default function CreateNote() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="folder">
-              Folder
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isFolder">
+              Is Folder
+            </label>
+            <input
+              type="checkbox"
+              id="isFolder"
+              className="mr-2 leading-tight"
+              checked={isFolder}
+              onChange={(e) => setIsFolder(e.target.checked)}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="parentFolder">
+              Parent Folder
             </label>
             <input
               type="text"
-              id="folder"
+              id="parentFolder"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={folder}
-              onChange={(e) => setFolder(e.target.value)}
+              value={parentFolder}
+              onChange={(e) => setParentFolder(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -198,33 +205,6 @@ export default function CreateNote() {
               checked={isPinned}
               onChange={(e) => setIsPinned(e.target.checked)}
             />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="attachments">
-              Attach Files/Images
-            </label>
-            <input
-              type="file"
-              id="attachments"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              multiple
-              onChange={handleFileChange}
-            />
-            <div className="mt-2">
-              {attachments.map((file, index) => (
-                <div key={index} className="mb-2">
-                  {file.type.startsWith('image/') ? (
-                    <img src={URL.createObjectURL(file)} alt={file.name} className="w-32 h-32 object-cover" />
-                  ) : (
-                    <div>
-                      <p>{file.name}</p>
-                      <p>{(file.size / 1024).toFixed(2)} KB</p>
-                      <p>{file.type}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
           <div className="flex items-center justify-between">
             <button
