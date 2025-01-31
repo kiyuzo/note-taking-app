@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '../_components/sidebar';
+import { convertFromRaw, EditorState } from 'draft-js';
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
@@ -23,7 +24,7 @@ export default function Dashboard() {
         const data = await response.json();
 
         if (response.ok) {
-          setNotes(data.notes || []);
+          setNotes(data || []);
         } else {
           console.error('Failed to fetch notes');
         }
@@ -66,6 +67,11 @@ export default function Dashboard() {
   };
 
   const handleDeleteNote = async (noteId) => {
+    const confirmed = window.confirm('Are you sure you want to delete this note?');
+    if (!confirmed) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/1.0/notes/${noteId}`, {
         method: 'DELETE',
@@ -75,13 +81,36 @@ export default function Dashboard() {
       });
 
       if (response.ok) {
-        const updatedNotes = notes.filter(note => note.note_id !== noteId);
+        const updatedNotes = notes.filter(note => note.nID !== noteId);
         setNotes(updatedNotes);
       } else {
         console.error('Failed to delete note');
       }
     } catch (error) {
       console.error('An error occurred while deleting the note', error);
+    }
+  };
+
+  const isValidJson = (str) => {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const convertContentToPlainText = (content) => {
+    if (!isValidJson(content)) {
+      return content;
+    }
+    try {
+      const contentState = convertFromRaw(JSON.parse(content));
+      const editorState = EditorState.createWithContent(contentState);
+      return editorState.getCurrentContent().getPlainText();
+    } catch (error) {
+      console.error('Failed to convert content', error);
+      return '';
     }
   };
 
@@ -118,12 +147,12 @@ export default function Dashboard() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredNotes.map((note) => (
-            <div key={note.note_id} className="border p-4 rounded shadow">
+            <div key={note.nID} className="border p-4 rounded shadow">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-xl font-bold text-black">{note.title}</h3>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => router.push(`/edit-note/${note.note_id}`)}
+                    onClick={() => router.push(`/edit-note/${note.nID}`)}
                     className="text-blue-500 hover:text-blue-700"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -131,7 +160,7 @@ export default function Dashboard() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDeleteNote(note.note_id)}
+                    onClick={() => handleDeleteNote(note.nID)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -140,7 +169,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <p className="text-gray-700 mb-2">{note.content}</p>
+              <p className="text-gray-700 mb-2">{convertContentToPlainText(note.content)}</p>
               <p className="text-gray-500 text-sm">Tags: {note.tags.join(', ')}</p>
               <p className="text-gray-500 text-sm">Updated: {new Date(note.updated_at).toLocaleString()}</p>
             </div>

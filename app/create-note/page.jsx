@@ -12,7 +12,8 @@ const Editor = dynamic(() => import('draft-js').then(mod => mod.Editor), { ssr: 
 export default function CreateNote() {
   const [title, setTitle] = useState('');
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
   const [isFolder, setIsFolder] = useState(false);
   const [parentFolder, setParentFolder] = useState('');
   const [isPinned, setIsPinned] = useState(false);
@@ -53,7 +54,7 @@ export default function CreateNote() {
     const newNote = {
       title,
       content,
-      tags: tags.split(',').map(tag => tag.trim()),
+      tags,
       isFolder,
       parentFolder: parentFolder || null,
       owner: user.user_id,
@@ -102,6 +103,21 @@ export default function CreateNote() {
 
   const toggleInlineStyle = (inlineStyle) => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+  };
+
+  const handleTagInputChange = (e) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleAddTag = () => {
+    if (tagInput.trim() !== '') {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index));
   };
 
   return (
@@ -160,15 +176,30 @@ export default function CreateNote() {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="tags">
-              Tags (comma separated)
+              Tags
             </label>
-            <input
-              type="text"
-              id="tags"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-            />
+            <div className="flex items-center">
+              <input
+                type="text"
+                id="tagInput"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                value={tagInput}
+                onChange={handleTagInputChange}
+              />
+              <button type="button" onClick={handleAddTag} className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Add Tag
+              </button>
+            </div>
+            <div className="mt-2">
+              {tags.map((tag, index) => (
+                <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                  {tag}
+                  <button type="button" onClick={() => handleRemoveTag(index)} className="ml-2 text-red-500">
+                    &times;
+                  </button>
+                </span>
+              ))}
+            </div>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isFolder">
