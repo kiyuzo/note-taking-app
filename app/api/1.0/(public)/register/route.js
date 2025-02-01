@@ -8,7 +8,6 @@ export async function POST(request) {
 
     // Validate Input
     try {
-        console.log(request.Body);
         json = await request.json();
         if(!validateRegisterBody(json)) {throw "Invalid request body";}        
     } catch (err) {

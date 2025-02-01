@@ -85,12 +85,25 @@ export default function EditNote() {
       content,
       tags,
       isFolder,
-      parentFolder: parentFolder || null,
-      owner: user.user_id,
-      isPinned,
+      parentFolder: parentFolder || null
     };
 
     try {
+      if(isPinned) {
+        await fetch(`/api/1.0/notes/${id}/pin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      } else {
+        await fetch(`/api/1.0/notes/${id}/pin`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      }
       const response = await fetch(`/api/1.0/notes/${id}`, {
         method: 'PUT',
         headers: {
