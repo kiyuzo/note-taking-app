@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [folders, setFolders] = useState([]);
   const [sort, setSort] = useState('date');
   const [user, setUser] = useState({ username: '', email: '' });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -131,27 +132,36 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex bg-white">
-      <Sidebar
-        accountName={user.username}
-        accountEmail={user.email}
-        onNewNote={handleNewNote}
-        notes={notes}
-      />
+      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-64`}>
+        <Sidebar
+          accountName={user.username}
+          accountEmail={user.email}
+          onNewNote={handleNewNote}
+          notes={notes}
+        />
+      </div>
+      <button
+        className={`fixed top-4 -left-3 z-50 md:hidden bg-gray-800 text-white rounded-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-64' : ''}`}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        style={{ width: '30px', height: '30px' }}
+      >
+        {isSidebarOpen ? '<' : '>'}
+      </button>
       <div className="flex-grow p-4">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-black">Welcome back, {user.username}</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-black ml-1">Welcome back, {user.username}</h1>
           <select
             value={sort}
             onChange={handleSortChange}
-            className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded py-1 md:py-2 px-2 md:px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
             <option value="date">Sort by Date</option>
             <option value="alphabetical">Sort Alphabetically</option>
             <option value="tags">Sort by Tags</option>
           </select>
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
             <h2 className="text-xl font-bold mb-2 text-black">Notes</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredNotes.map((note) => (
@@ -161,7 +171,8 @@ export default function Dashboard() {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => router.push(`/edit-note/${note.nID}`)}
-                        className="text-blue-500 hover:text-blue-700"
+                        className="text-blue-500 hover:text-blue-700 flex items-center justify-center bg-gray-200 md:shadow-none"
+                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.213l-4.5 1.5 1.5-4.5L16.862 3.487z" />
@@ -169,7 +180,8 @@ export default function Dashboard() {
                       </button>
                       <button
                         onClick={() => handleDeleteNote(note.nID)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 flex items-center justify-center bg-gray-200 md:shadow-none"
+                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 6.75L4.5 6.75m0 0L5.25 19.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25L19.5 6.75m-15 0L6 4.5a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 4.5l.75 2.25m-15 0h15" />
@@ -184,7 +196,7 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
-          <div className="col-span-1">
+          <div className="md:col-span-1">
             <h2 className="text-xl font-bold mb-2 text-black">Folders</h2>
             {folders.map((folder) => (
               <div key={folder.nID} className="border p-4 rounded shadow mb-4">
@@ -193,7 +205,8 @@ export default function Dashboard() {
                   <div className="flex space-x-2">
                     <button
                       onClick={() => router.push(`/edit-folder/${folder.nID}`)}
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-blue-500 hover:text-blue-700 flex items-center justify-center bg-gray-200 md:shadow-none"
+                      style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.213l-4.5 1.5 1.5-4.5L16.862 3.487z" />
@@ -201,7 +214,8 @@ export default function Dashboard() {
                     </button>
                     <button
                       onClick={() => handleDeleteNote(folder.nID)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 flex items-center justify-center bg-gray-200 md:shadow-none"
+                      style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 6.75L4.5 6.75m0 0L5.25 19.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25L19.5 6.75m-15 0L6 4.5a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 4.5l.75 2.25m-15 0h15" />
