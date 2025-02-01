@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../_components/navbar';
+import Footer from '@/_components/footer';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -116,6 +117,7 @@ const Register = () => {
           </div>
         </form>
       </div>
+      <Footer />
     </div>
   );
 };
