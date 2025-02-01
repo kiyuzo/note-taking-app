@@ -6,6 +6,7 @@ import Navbar from '../_components/navbar';
 import dynamic from 'next/dynamic';
 import { EditorState, RichUtils, convertToRaw } from 'draft-js';
 import 'draft-js/dist/Draft.css';
+import Footer from '@/_components/footer';
 
 const Editor = dynamic(() => import('draft-js').then(mod => mod.Editor), { ssr: false });
 
@@ -124,7 +125,7 @@ export default function CreateNote() {
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <div className="p-4 flex-grow">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Note</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-black">Create Note</h2>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
@@ -182,11 +183,11 @@ export default function CreateNote() {
               <input
                 type="text"
                 id="tagInput"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-2/3 md:w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 value={tagInput}
                 onChange={handleTagInputChange}
               />
-              <button type="button" onClick={handleAddTag} className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              <button type="button" onClick={handleAddTag} className="ml-2 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold px-6 md:px-8 text-sm rounded focus:outline-none focus:shadow-outline whitespace-nowrap">
                 Add Tag
               </button>
             </div>
@@ -254,6 +255,7 @@ export default function CreateNote() {
           </div>
         </form>
       </div>
+      <Footer />
     </div>
   );
 }
